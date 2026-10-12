@@ -2,6 +2,7 @@ import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import ExploreMenu from "@/components/ExploreMenu";
 import DealsExplorer from "@/components/DealsExplorer";
+import HeroCarousel from "@/components/HeroCarousel";
 import { products } from "@/lib/menu";
 
 const categories = [
@@ -13,12 +14,7 @@ const featured = ["chicken-tikka-pizza", "p4-special-pizza", "zinger-burger", "f
   .map((slug) => products.find((product) => product.slug === slug)).filter((product) => product !== undefined);
 export default function Home() {
   return <>
-    <section className="hero">
-      <div className="hero-media" data-parallax><img src="/images/hero-v2.png" alt="Chicken pizza shared fresh from the oven"/></div>
-      <div className="container hero-content"><span className="kicker light">P4 Pizza & Fast Food</span><h1>Crave it.<br/>Share it.</h1><p className="hero-subtitle">Your favorites, the P4 way.</p><Link href="/menu" className="hero-cta"><span>Explore the menu</span><span>↗</span></Link></div>
-      <div className="hero-index"><span>Rawalpindi, Pakistan</span><span>Scroll to explore ↓</span></div>
-      <svg className="section-wave hero-wave" viewBox="0 0 1440 72" preserveAspectRatio="none" aria-hidden="true"><path d="M0 38 C270 70 490 9 745 34 C1030 64 1190 17 1440 43 L1440 72 H0 Z"/></svg>
-    </section>
+    <HeroCarousel />
 
     <ExploreMenu />
 

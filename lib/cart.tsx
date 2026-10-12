@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { products } from "./menu";
 
 export type CartItem = { slug: string; variant: string; quantity: number; addOn?: string };
+export type OrderType = "delivery" | "pickup";
 export const addOnFor = (category: string) => category === "Classic Pizzas" || category === "Special Pizzas" ? "Extra Chicken & Cheese Toppings" : category === "Burgers" || category === "Shawarma & Rolls" ? "Cheese Slice" : undefined;
 export const addOnPrice = (item: Pick<CartItem, "variant" | "addOn">) => item.addOn === "Cheese Slice" ? 60 : item.addOn === "Extra Chicken & Cheese Toppings" ? ({ Small: 100, Medium: 200, Large: 300, "X-Large": 400 } as Record<string, number>)[item.variant] || 0 : 0;
 export const itemUnitPrice = (item: CartItem) => (products.find((product) => product.slug === item.slug)?.variants.find((variant) => variant.name === item.variant)?.price || 0) + addOnPrice(item);
@@ -18,21 +19,33 @@ type CartContextValue = {
   remove: (item: CartItem) => void;
   replace: (item: CartItem, variant: string, quantity: number, addOn?: string) => void;
   clear: () => void;
+  orderType: OrderType | null;
+  setOrderType: (type: OrderType) => void;
+  orderPickerOpen: boolean;
+  openOrderPicker: () => void;
+  closeOrderPicker: () => void;
 };
 const CartContext = createContext<CartContextValue | null>(null);
 const storageKey = "p4-pizza-cart";
+const orderTypeStorageKey = "p4-pizza-order-type";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [ready, setReady] = useState(false);
+  const [orderType, setSelectedOrderType] = useState<OrderType | null>(null);
+  const [orderPickerOpen, setOrderPickerOpen] = useState(false);
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(storageKey) || "[]") as CartItem[];
       if (Array.isArray(saved)) setItems(saved.filter((item) => products.some((p) => p.slug === item.slug && p.variants.some((v) => v.name === item.variant)) && Number.isInteger(item.quantity) && item.quantity > 0));
+      const savedOrderType = localStorage.getItem(orderTypeStorageKey);
+      if (savedOrderType === "delivery" || savedOrderType === "pickup") setSelectedOrderType(savedOrderType);
     } catch { /* Ignore invalid old cart data. */ }
     setReady(true);
   }, []);
   useEffect(() => { if (ready) localStorage.setItem(storageKey, JSON.stringify(items)); }, [items, ready]);
+  useEffect(() => { if (ready && orderType) localStorage.setItem(orderTypeStorageKey, orderType); }, [orderType, ready]);
+  const setOrderType = (type: OrderType) => { setSelectedOrderType(type); setOrderPickerOpen(false); };
   const add = (slug: string, variant: string, quantity = 1, addOn?: string) => setItems((current) => {
     const existing = current.find((item) => item.slug === slug && item.variant === variant && item.addOn === addOn);
     return existing ? current.map((item) => item === existing ? { ...item, quantity: item.quantity + quantity } : item) : [...current, { slug, variant, quantity, addOn }];
@@ -46,7 +59,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   });
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
   const total = items.reduce((sum, item) => sum + itemUnitPrice(item) * item.quantity, 0);
-  return <CartContext.Provider value={{ items, ready, count, total, add, update, remove, replace, clear: () => setItems([]) }}>{children}</CartContext.Provider>;
+  return <CartContext.Provider value={{ items, ready, count, total, add, update, remove, replace, clear: () => setItems([]), orderType, setOrderType, orderPickerOpen, openOrderPicker: () => setOrderPickerOpen(true), closeOrderPicker: () => setOrderPickerOpen(false) }}>{children}</CartContext.Provider>;
 }
 export function useCart() {
   const context = useContext(CartContext);
