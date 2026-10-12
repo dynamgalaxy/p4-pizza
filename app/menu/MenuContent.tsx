@@ -25,7 +25,7 @@ function MenuCart() {
           <div className="menu-cart-item-info"><strong>{product.name}</strong><span>{item.variant}{item.addOn ? ` · ${item.addOn}` : ""}</span><b>{money(itemUnitPrice(item) * item.quantity)}</b><div className="menu-cart-quantity"><button type="button" aria-label={`Decrease ${product.name} quantity`} onClick={() => update(item, item.quantity - 1)}>−</button><span>{item.quantity}</span><button type="button" aria-label={`Increase ${product.name} quantity`} onClick={() => update(item, item.quantity + 1)}>+</button><button type="button" className="menu-cart-remove" aria-label={`Remove ${product.name}`} onClick={() => remove(item)}>Remove</button></div></div>
         </div>;
       })}</div>
-      <div className="menu-cart-total"><span>Total</span><strong>{money(total)}</strong></div><Link href="/checkout" className="button button-red menu-cart-checkout">Checkout ↗</Link><Link href="/cart" className="menu-cart-view">View full cart</Link>
+      <div className="menu-cart-total"><span>Total</span><strong>{money(total)}</strong></div><Link href="/checkout" className="button button-red menu-cart-checkout">Checkout ↗︎</Link><Link href="/cart" className="menu-cart-view">View full cart</Link>
     </>}
   </aside>;
 }
