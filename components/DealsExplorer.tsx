@@ -7,7 +7,7 @@ import { products } from "@/lib/menu";
 
 const filters = [
   ["All deals", ""], ["Bumper", "Bumper Deal"], ["Wow", "Wow Deal"],
-  ["Midnight", "Mid Night Deal"], ["Birthday", "Birthday Deal"], ["Triple Pizza", "Tripple Pizza Deals"],
+  ["Midnight", "Mid Night Deal"], ["Birthday", "Birthday Deal"], ["Triple Pizza", "Tripple Pizza Deals"], ["Special", "Special Deal"],
 ];
 const deals = products.filter((product) => product.category.includes("Deal"));
 
